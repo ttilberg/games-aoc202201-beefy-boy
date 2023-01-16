@@ -1,0 +1,704 @@
+* 3.23
+** [Pro] [VR] Headset and controller orientation added.
+   A normalized vector with ~x,y,z~ is returned for all orientations.
+   - ~args.inputs.controller_one.left_hand.orientation.(x|y|z)
+   - ~args.inputs.controller_one.right_hand.orientation.(x|y|z)
+   - ~args.inputs.headset.orientation.(x|y|z)
+** [Pro] Texture atlases explicitly search for a single directory to avoid long startup times.
+   The default directory that will be searched is =sprites=. You can override the default
+   directory by specifying ~sprites_directory=DIRECTORY~ in =game_metadata.txt=.
+** [Support] Line and border rendering is 140%+ faster for ~Hash~ and ~Class~ based representations.
+** =cvars.txt= added with HTTP logging disabled.
+   =./mygame/metadata/cvars.txt= has been added to the zip file with the following contents:
+   #+begin_src cvars
+   log.filter_subsystems=HTTPServer
+   #+end_src
+** [Support] ~Numeric#vector~ has been deprecated.
+   Use ~Numeric.to_vector~ which returns a ~Hash~ containing ~x~ and ~y~ instead of ~Array/Tuple~.
+** [Bugfix] ~args.inputs.shift_(left|right)~ report the correct value in web builds.
+* 3.22
+** [Pro] [Support] Triangles support texture atlases.
+** [Bugfix] ~args.inputs.mouse.relative_(x|y)~ report correct values (regression when HD support was added).
+** [Bugfix] Console menu buttons are positioned correctly in both portrait and landscape mode.
+** [Samples] Sample app showing scene management added.
+   Location: =./samples/02_input_basics/07_managing_scenes/=
+* 3.21
+** [Pro] [Support] Added portrait mode.
+   In =metadata/game_metadata.txt= you can specify ~orientation=portrait~ to build a game that has
+   a logical canvas of 720x1280 (as opposed to ~landscape~ 1280x720).
+** [Pro] [iOS] ~$wizards.ios.start~ creates the correct metadata file for portrait mode games.
+** [Pro] [Support] All Screen renders/scales correctly even if the window is smaller than 720p.
+** [Pro] [Support] ~args.layout.rect~ expanded to support Portrait mode (and simplified).
+** [Pro] [Support] Render targets render fonts in High DPI if ~highdpi=true~.
+** [Support] Added a more descriptive error message to ~dragonruby-publish~ if files needed to publish
+   are missing.
+** [Samples] Added sample app demonstrating ~args.layout.(rect|rect_group|point)~ for ~orientation=portrait~.
+   Location: =./samples/07_advanced_rendering_hd/04_layouts_and_portrait_mode=
+** [Samples] Ray Casting sample app added.
+   A big thank you to =Brenner Little@discord= for granting permission to include this as a sample app.
+   Location: =./samples/99_genre_3d/04_ray_caster=
+** [OSS] The following PRs have been merged in from https://github.com/DragonRuby/dragonruby-game-toolkit-contrib.
+   - Add documentation section about accessing files #133
+* 3.20
+** [Pro] [Support] ~highdpi=true|false~ can be specified in =./metadata/game_metadata.txt=.
+** [Pro] [Bugfix] Texture atlases respect sprite properties ~tile_(x|y|w|h)~ and ~source_(x|y|w|h)~.
+** [Pro] [Bugfix] Texture atlases retrieval respects non-standard game directory.
+   If your startup time for your game is still long, DM us on our Discord Server so we can troubleshoot.
+** [Pro] [Samples] Added sample app that shows how to use ~args.grid.allscreen_*~ properties.
+   Located at =./samples/07_advanced_rendering_hd/03_allscreen_properties=.
+** [Support] Api usage for mouse grab is ~$gtk.set_mouse_grab(0|1|2)~, NOT ~$gtk.set_mouse_grab(true|false)~.
+   - 0: disables mouse grab.
+   - 1: enables mouse grab with cursor visible.
+   - 2: enables mouse grab with cursor invisible.
+
+   SDL Hints have been added to help mouse stay within the bounds of the window (MacOS may still be flakey with window boundaries though).
+** [Bugfix] game_metadata.txt configuration retrieval increased to 1024 lines.
+** [Support] Added ~args.events.resize_occurred~ which will return ~true~ if the game window has been resized.
+** [Support] ~scale_quality=0|1|2~ can be specified in =./metadata/game_metadata.txt=. This property can be set at all license tiers.
+   - 0: nearest neighbor
+   - 1: linear
+   - 2: anti-aliasing
+* 3.19
+** [Pro] Updates to DragonRuby Game Toolkit Pro.
+   The following updates have been made to the Pro license.
+*** [Support] HD rendering capabilities added.
+    HD rendering capabilities have been added for the Pro version of DragonRuby Game Toolkit.
+    Detailed documentation can be found inside of =./metadata/game_metadata.txt= and in the sample apps.
+
+    Check out the following YouTube Video for a demo of All Screen Mode: [[https://youtu.be/Rnc6z84zaa4]]
+
+    Check out the following YouTube Video for a demo of Texture Atlases: [[https://youtu.be/gH0XiafWQ_c]]
+
+    Clepto Frog and The Little Probe both have HD Configurations that can be enabled. Be sure to play
+    around with them.
+**** Rending support for 720p to 5K.
+     A sample app that shows HD Rendering can be found at =./samples/07_advanced_rendering_hd/01_hd_labels=
+
+     To enable HD Mode set ~hd=true~ inside of =./metadata/game_metadata.txt=. Your game will
+     be scaled to best fit the screen size that it's being run on (labels inside of render targets
+     are also rendered at native scale).
+**** Texture Atlases.
+     A sample app that shows how texture atlases work can be found at =./samples/07_advanced_rendering_hd/02_texture_atlases=
+
+     With HD mode enabled. DragonRuby will automatically use HD sprites given the following
+     naming convention (assume we are using a sprite called =player.png=):
+
+     | Name  | Resolution | File Naming Convention (enum) |
+     |-------+------------+-------------------------------|
+     | 720p  |   1280x720 | =player.png=                  |
+     | HD+   |   1600x900 | =player@125.png=              |
+     | 1080p |  1920x1080 | =player@125.png=              |
+     | 1440p |  2560x1440 | =player@200.png=              |
+     | 1800p |  3200x1800 | =player@250.png=              |
+     | 4k    |  3200x2160 | =player@300.png=              |
+     | 5k    |  6400x2880 | =player@400.png=              |
+
+     The current file naming convention DR is trying to use can be accessed
+     via ~args.grid.render_scale_enum~ (be sure to take a look at the sample app).
+**** All Screen Mode.
+     To enable All Screen Mode set ~allscreen=true~ inside of =./metadata/game_metadata.txt=. All
+     Screen Mode removes letter boxing around your game allowing you to render outside of the
+     1280x720 logical area (unsafe screen area).
+
+     You can also set ~allscreen_max_scale=RENDER_SCALE_ENUM~ which controls how your games scales
+     past 720p (giving you more or less unsafe screen area).
+
+     The following properties on ~args.grid~ can assist in rendering off-screen:
+
+     - ~allscreen_left~
+     - ~allscreen_right~
+     - ~allscreen_width~
+     - ~allscreen_height~
+     - ~allscreen_width~
+     - ~allscreen_height~
+     - ~allscreen_offset_x~
+     - ~allscreen_offset_y~
+     - ~render_width~
+     - ~render_height~
+
+     NOTE: All ~allscreen~ values above are given in the logical 1280x720 scale (you will still continue
+     to render your game assuming 1280x720).
+*** [Pro] [Support] [VR] Simulator, Device Tracking, Z-Depth Buffering
+    Some much needed apis have been added to DragonRuby Game Toolkit VR.
+**** Z-Depth Buffering
+     Sprites are automatically sorted based off of their ~z~ property (you no
+     longer have to manually sort primitives within your game). If you see visual
+     tearing, it means that two primitives are competing for the same Z depth
+     and one has to be moved forward or back.
+
+     Note: Z-depth buffering assumes that your primitives are not transparent. If
+     you are using transparent sprites, you must sort by Z values for cascading
+     transparencies to render _mostly_ correctly. This is a fundamental limitation
+     of OpenGL. You can read more about this limitation at [[https://www.sjbaker.org/steve/omniv/alpha_sorting.html]].
+**** Headset and controller tracking added.
+     The following device locations are now available.
+
+     - ~args.inputs.headset.position.(x|y|z)~
+     - ~args.inputs.controller_one.left_hand.position.(x|y|z)~
+     - ~args.inputs.controller_one.right_hand.position.(x|y|z)~
+
+     Things to note about the values above:
+
+     - All location values are floating point numbers representing the relative distance from the
+       Boundary's Origin.
+     - The floating point values represent the number of meters away from that origin position.
+     - 96 pixels maps to 1 meter in VR.
+     - DR's VR world is 1280x1280x1280 (try the VR Skybox sample app to see what that scale looks like).
+**** VR Simulator
+     You can see how your game looks like in VR using ~./dragonruby-vrsim~ (start up that process as opposed
+     to ~./dragonruby~).
+
+     Controls:
+
+     - You can use a USB controller to simulate the buttons on the Oculus Quest controllers.
+     - Pressing =ctrl+m= will capture mouse and keyboard input. Use =WASD/arrow= keys to move
+       around the VR environment. Mouse to look around. and =I= and =K= to fly up and down in the
+       VR environment.
+     - Press =ctrl+g= to exit mouse capture.
+
+     Note: There's still a bit of work that needs to be done with the simulator. Hope you find what's
+     currently there useful.
+*** [Support] [iOS] Remote hotloading on iOS devices logs to ~spam~ category instead of ~debug~.
+** [Pro] [Indie] [Standard] Updates to all license tiers.
+   The following updates are available at all licensing tiers.
+*** [Support] Added ~$gtk.set_mouse_grab(true/false)~.
+*** [Support] Added ~$gtk.list_files(dir)~, ~$gtk.stat_file(path)~, and ~$gtk.delete_file(path)~.
+    You can view documentation for file apis:
+    - Under =./docs/docs.txt
+    - At [[http://docs.dragonruby.org]] (latest version).
+    - Or at [[http://localhost:9001]] while your game is running.
+*** [Support] ~log_(spam|debug|info|warn|error|unfiltered)~ functions added to ~Object~.
+    The logging apis that were only available via ~$gtk~ are now accessible at the top level.
+*** [Support] Performance enhancements to ~GTK::Geometry::intersect_rect?(rect_1, rect_2, tolerance)~
+    The ~intersect_rect?~ api has been re-implemented in C which significantly increases performance.
+*** [Support] Added ~GTK::Geometry::find_intersect_rect(rect, rects, tolerance)~
+    A helper method called ~find_intersect_rect~ has been added.
+
+    If you find yourself doing:
+    #+begin_src ruby
+      collision = args.state.enemies.find { |e| e.intersect_rect? args.state.player }
+    #+end_src
+
+    You can instead do the following for a significant performance boost:
+    #+begin_src ruby
+      collision = args.geometry.find_intersect_rect(args.state.enemies, args.state.player)
+    #+end_src
+*** [Samples] Added sample app that shows how to wrap long lines of text.
+    Location =./samples/01_rendering_basics/01_labels_text_wrapping=.
+*** [Samples] Screen shake sample app added.
+    Location =./samples/07_advanced_rendering/07_shake_camera=.
+*** [Samples] Physics sample app added that shows interactions between a bouncing ball and arbitrary lines.
+    Located at =./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity=.
+*** [Samples] Button sample app added that shows how to create a button and wire up click behavior.
+    Located at =./samples/05_mouse/05_clicking_buttons=.
+*** [Samples] File api sample app has been added that shows how to use all the available file apis.
+    Located at =./samples/06_save_load/00_reading_writing_files=.
+*** [Bugfix] ~args.audio~ no longer crashes when a hash key is reused.
+*** [OSS] The following PRs have been merged in from https://github.com/DragonRuby/dragonruby-game-toolkit-contrib.
+    - Add scaling to Tweetcart scene! #131
+    - Use begin blocks to improve console eval #125
+    - Improve responsivity of Control hotkeys (e.g. Ctrl-g, Ctrl-u, Ctrl-d) #126
+    - Add default value to Tweetcart no_clear! #132
+    - Bump regex from 1.4.2 to 1.5.5 in /samples/13_rust_extensions/02_intermediate/regex-capi #121
+* 3.18
+** [Pro] [Bugfix] [iOS] iOS packaging wizard removes =.DS_Store= metadata from codesigned binaries.
+** [Bugfix] ~args.inputs.controller_(three|four)~'s ~truthy_keys~ are now cleared at the end of ~tick~.
+** [Bugfix] =dragonruby-publish= supports the packaging of larger audio files.
+** [Bugfix] =http://localhost:9001/changelog= no longer throws an exception.
+** [Bugfix] [OSS] ~Numeric#clamp_wrap~ now includes the minimum value.
+   Thanks to Hiro_r_b@discord for the PR.
+** [Bugfix] [OSS] ~Tweetcart#no_clear!~ respects the ~render_target_name~ parameter that is passed to it.
+   Thanks to Hiro_r_b@discord for the PR.
+** [Samples] Path finding sample apps have been updated to user ~Hash~ based primitives.
+   Location of Path finding samples: =./samples/13_path_finding_algorithms=
+** [OSS] ~args.gtk.(save|load)_state~ has been open sourced.
+** [OSS] The Console now uses a scoped class called ~ConsoleEvaluator~.
+   - The global variables ~$gtk~, ~$args~, $wizards~ etc are still available,
+     but now you can type ~gtk.reset~ instead of ~$gtk.reset~.
+   - Console accepts ~search "search term"~ which will search the documentation and return topics that match.
+** [OSS] Small styling changes have been made to the Console.
+** [Support] Added documentation for ~args.gtk.(mouse|keyboard)_focus~.
+** [Support] Added documentation for ~args.gtk.platform?~.
+** [Support] Added ~repl_silent~ which suppresses showing the Console (usable in =app/repl.rb=)
+   The following when added to =app/repl.rb= will bring up the Console after execution:
+   #+begin_src ruby
+     repl do
+       args.state.player.x = 100
+       args.state.player.y = 200
+       puts "Player location is #{args.state.player.x}", #{args.state.player.y}"
+     end
+   #+end_src
+
+   Using ~repl_silent~ will NOT bring up the Console:
+   #+begin_src ruby
+     repl_silent do
+       args.state.player.x = 100
+       args.state.player.y = 200
+       puts "Player location is #{args.state.player.x}", #{args.state.player.y}"
+     end
+   #+end_src
+* 3.17
+** [Bugfix] VSync was set to false as the default. This has been reenabled.
+* 3.16
+** [Pro] [iOS] ~tick~ given a higher thread priority.
+** [Pro] [iOS] background music session category set to Ambient.
+   This will keep music volume playing from another app from being lowered.
+** [Pro] [Indie] Added ~gtk.get_pixels file_name~ which will return a pixel buffer.
+   You can store ~gtk.get_pixels~ into a variable and use it to get the color
+   of a sprite at a specific pixel location (eg collision map).
+** [Pro] [Indie] Added sample app that shows how to load a ~pixel_array~ from a png.
+   Sample app is located at =./samples/07_advanced_rendering/06_pixel_arrays_from_file=.
+** [Bugfix] Html builds now persists files across sessions.
+** [Support] Touch apis are now available in Standard Edition and work in web builds.
+** [Support] DawnBringer color palette added to Tweetcart.
+** [Support] Added ~args.inputs.controller_(three|four)~.
+** [Support] Added ~gtk.open_game_dir~ which will open the sandbox location for your game.
+** [Support] DragonRuby Dev Server (http://localhost:9001) now contains a link to source code backups.
+** [Support] Game runs at a faster fps when it doesn't have focus.
+   You can configure the framerate via ~renderer.background_sleep~ cvar.
+** [Support] ~./dragonruby-publish~ now sets the ~--userversion~ flag on Butler.
+** [Support] Added ~gtk.reset_next_tick~ which will invoke ~gtk.reset~ before the next tick is invoked.
+   This will keep you from having exceptions caused by invoking ~gtk.reset~ part way through your ~tick~ method.
+** [OSS] ~gtk.(save_state|load_state)~ open sourced.
+** [OSS] DragonRuby Console now persists local variables (thanks mooff@discord for the contribution).
+** [OSS] PR that cleans up ~./dragon/api.rb~ has been merged in (thanks kfischer_okarin@discord for the contribution).
+* 3.15
+** [Support] [Important] Server Side Request Forgery vulnerability patch for DragonRuby Game Toolkit Web Console (http://localhost:9001)
+   All http endpoints that submit data to DragonRuby now only accept ~Content-Type~ with the *exact value* of ~application/json~.
+   This change patches a SSRF vulnerability that would allow a malicious website to process request against
+   ~http://localhost:9001/dragon/eval/~ and execute arbitrary code on your machine.
+
+   Thanks to sophira@discord for finding a specific edge case where the Content-Type could include both ~multipart/form-data~ and ~application/json~.
+
+   Source code for the Web Console is available at [[https://github.com/DragonRuby/dragonruby-game-toolkit-contrib/blob/master/dragon/api.rb]]
+* 3.14
+** [Support] Performance improvements to ~Array#map_with_index~.
+** [Support] Performance improvements to ~Array#map~.
+** [Bugfix] ~Matrix::normalize~ when given a vector that contains all zeros, returns a vector containing all zeros instead of ~nil~.
+** [Bugfix] ~Geometry::line_intersect~ correctly handles vertical lines.
+** [Bugfix] ~Geometry::ray_test~ reports ~:left~, ~:right~, ~:on~ correctly for lines of negative slope.
+** [Samples] See the following sample app for usage of ~Geometry::(line_intersect|ray_test)~
+   Location: =./samples/99_genre_platformer/the_little_probe=
+** [Samples] New sample app added showing how to create a boss battle.
+   Location: =./samples/99_genre_boss_battle/boss_battle_game_jam=
+* 3.13
+** [Bugfix] [VR] Cube World sample app includes ~MatrixFunctions~ and no longer throws an exception.
+** [Bugfix] ~Array#reject~ properly handles invocation when a block isn't provided.
+** [Bugfix] ~Matrix.(normalize|normalize!) computes unit vector correctly.
+* 3.12
+** [Support] Improved performance for processing many to many collisions.
+   Sample app has also been updated: =/samples/09_performance/09_collision_limits_many_to_many/=
+** [Support] 5% to 15% performance improvement on non-static output rendering.
+** [Support] ~Array#(map|reject)~ performance improved ~25%.
+** [Bugfix] ~Array#sample~ no longer leaves out the last element from selection.
+** [Bugfix] ~$gtk.(save|load)_state~ correctly persists value types with the same value.
+* 3.11
+** [Bugfix] Fixed regression in C rendering pipeline that caused a degradation in hash rendering performance.
+** [Bugfix] ~Hash.(merge|merge!) respects block that is passed into it. Regression was introduced in 2.14.
+** [Support] Matrix math apis moved to ~Matrix~ class/module.
+   Instead of ~vec3(1, 1, 1)~, you will need to do ~Matrix.vec3(1, 1, 1)~.
+
+   Optionally you can mixin the ~MatrixFunctions~ module into your class to remove the ~Matrix~
+   prefix requirement.
+
+   VR and Advanced Rendering sample apps have been updated to reflect this change.
+
+   Option 1:
+   #+begin_src ruby
+     def tick args
+       puts Matrix.vec4(1, 1, 1, 1)
+     end
+   #+end_src
+
+   Option 2:
+   #+begin_src ruby
+     include MatrixFunctions
+
+     def tick args
+       puts vec4(1, 1, 1, 1)
+     end
+   #+end_src
+
+* 3.10
+** [Pro] [VR] Cubeworld sample app added =./samples/14_vr/08_cubeworld_vr=
+** [Pro] [VR] Gimbal Lock sample app added =./samples/14_vr/05_gimbal_lock=
+** [Pro] [VR] Let There Be Light sample app entity count increased given C based rendering pipeline.
+** [Pro] [VR] Space Invaders Z Rendering reworked to spread out enemies.
+** [Standard] Small performance improvements to ~args.geometry.find_collisions~.
+** [Standard] ~mul~ performs component-wise multiplication on ~vec~ and ~float~.
+** [Standard] ~add~ performs component-wise addition on ~float~.
+* 3.9
+** [Pro] [VR] Rendering pipeline handles the enumeration of ~args.outputs~ in C.
+** [Pro] [VR] Triangle support added.
+** [Pro] [VR] [Bugfix] Fixed exception related to rendering lines when a width/height isn't provided.
+** [Indie] [Samples] Sample apps added to show matrix apis in conjunction with triangles.
+   Three sample apps have been added to demonstrate these capabilities:
+   - 2D matrix transforms: =./samples/07_advanced_rendering/15_matrix_and_triangles_2d=
+   - 3D matrix transforms: =./samples/07_advanced_rendering/15_matrix_and_triangles_3d=
+   - 3D matrix transforms advanced: (with mouse look): =./samples/07_advanced_rendering/15_matrix_cubeworld=
+** [Standard] [Support] Hash-based sprite rendering is a tiny bit faster.
+** [Standard] The following matrix math apis have been added to ~Object~ (accessible from anywhere):
+   The intent of these matrix functions is to mirror GLSL matrix apis.
+   - ~vec(2|3|4)~: Creates a ~vec~ with the given dimension. Represented as a ~Hash~
+                   with the ~primitive_marker~ set to ~:vec2~, ~:vec3~, or ~vec4~.
+   - ~mat(2|3|4)~: Creates a ~mat~ with the given dimension. Represented as a ~Hash~ of ~Hash~es
+                   with the ~primitive_marker~ set to ~:mat2~, ~:mat3~, ~:mat4~ at the top level,
+                   and ~:vec(2|3|4)~ for each vector component.
+   - ~add~: Adds matrices given to the function (returns ~nil~ if a matrix multiplication isn't valid).
+   - ~mul~: Multiplies matrices given to the function. Returns ~nil~ if the matrices are incompatible.
+   - ~dot~: Performs a scalar dot product for matrices given a list of matrices. Returns ~nil~ if the matrices are incompatible.
+   - ~cross~: Performs a cross product for matrices given a list of matrices. Returns ~nil~ if the matrices are incompatible.
+   - ~normalize~: Normalizes a vector. Returns the new normalized vector as a new ~Hash~.
+   - ~normalize!~: Normalizes a vector. Mutates the vector passed in.
+   - ~distance~: Returns the distance between to vectors. Returns ~nil~ if the vectors are incompatible.
+   - ~Hash#+~: Delegates to ~add~ for matrix multiplication. Returns ~nil~ if the matrices are
+               incompatible or if ~primitive_marker~ isn't set on the ~Hash~.
+   - ~Hash#*~: Delegates to ~mul~ for matrix multiplication. Returns ~nil~ if the matrices are
+               incompatible or if ~primitive_marker~ isn't set on the ~Hash~.
+** [Standard] Added ~Numeric#from_(bottom|left)~ which will take into consideration the origin of ~args.grid~.
+** [Standard] Added ~Keyboard#(left|right|up|down)_arrow~ which excludes WASD keys.
+** [Standard] Log statements added when a controller is connected.
+** [OSS] Synced changes to =api.rb= from open source repo.
+* 3.8
+** [Pro] [iOS] Fixed issue related to app tombstoning and the simulation loop attempting to catch up when brought back to the foreground.
+** [Pro] [iOS] iOS wizard reports CLI errors from ~sh~ commands.
+** [Pro] [Android] Better organization of =./.dragonruby/stubs/android/= template files.
+** [Support] 3Dconnexion SpaceNavigator device ignored as a controller.
+** [OSS] [Support] PR merged: ~Enumerable#sum~ .
+** [OSS] [Support] PR merged: Bug fix in reporting test failures accurately .
+** [OSS] [Support] PR merged: ~Tweetcart::scene!~ now accepts ~w~ and ~h~ as optional parameters.
+** [OSS] [Support] PR merged: ~Tweetcart::tc~ alias to ~$args.state.tick_count~.
+** [Support] Performance improvements to rendering.
+   1. You should see a 10% to 30% overall increase in rendering performance across all primitives.
+   2. You should see a 50% to 200% increase in rendering ~sprites~ represented as ~Hash~.
+   3. Game Toolkit's render loop no longer defines/calls ~GTK::Runtime#primitives(pass)~. The rendering pipeline
+      handles the enumeration of ~args.outputs~ in C.
+
+      You can define ~GTK::Runtime#primitives(pass)~ if you want to
+      override this core rendering behavior. A sample app has been added to demonstrate this:
+      =./samples/07_advanced_rendering/15_override_core_rendering=
+
+      It is STRONGLY recommended that you do NOT override core rendering
+      behavior unless you know what you're doing.
+** [Bugfix] ~Hash#(left|right|top|bottom)~ reports the correct value if any one of those properties is assigned a value.
+* 3.7
+** [Pro] [Android] Added support for Google Play App Bundles.
+** [Pro] [Android] SDK compilation target updated to API 30.
+** [Support] ~args.outputs.sprites~ will render the ~:pixel~ render target if ~path~ is not provided.
+   Example:
+   #+begin_src ruby
+     def tick args
+       # renders a sprite
+       args.outputs.sprites << { x: 0, y: 0, w: 100, h: 100, path: "sprites/square/blue.png" }
+
+       # renders a checker-box
+       args.outputs.sprites << { x: 100, y: 100, w: 100, h: 100, path: "sprites/square/does-not-exist.png" }
+
+       # renders a white square
+       args.outputs.sprites << { x: 200, y: 200, w: 100, h: 100 }
+
+       # equivalent to
+       args.outputs.sprites << { x: 200, y: 200, w: 100, h: 100, path: :pixel }
+
+       # renders a green square
+       args.outputs.sprites << { x: 300, y: 200, w: 100, h: 100, r: 0, g: 255, b: 0 }
+
+       # renders a green square
+       args.outputs.sprites << { x: 300, y: 200, w: 100, h: 100, r: 0, g: 255, b: 0, path: :pixel }
+     end
+   #+end_src
+** [Bugfix] Added missing assets for triangle sample app.
+* 3.6
+** [Pro]
+   The following updates are available Pro license holders.
+*** [VR] VR capabilities are now incorporated into the Pro DragonRuby License and no longer requires a separate download.
+*** [VR] [Bugfix] ~args.controller_one.left_analog_y_perc~ reports the correct direction.
+*** [iOS] iOS icons assets updated to pass latest submission requirements.
+*** [iOS] [Bugfix] iOS production distribution now reports the correct value for ~$gtk.production~.
+*** [Android] Android ~minSdkTarget~ lowered to version 23 from 26 to increase support more Android devices.
+*** [VR] [Samples] Citadel sample app added that shows how to render 3d columns composed of rotated sprites.
+    Location: =./samples/14_vr/citadels=
+*** [Bugfix] ~./dragonruby-publish~ no longer fails to publish to Itch (iOS and Android bundles are ignored).
+** [Indie]
+   The following updates are available to Pro and Indie license holders.
+*** [Support] [C Extensions] C extensions can now directly access the underlying runtime and extend it.
+    Example:
+    #+begin_src c
+      DRB_FFI_EXPORT
+      void drb_register_c_extensions_with_api(mrb_state *state, struct drb_api_t *api) {
+        drb_api = api;
+        struct RClass *FFI = drb_api->mrb_module_get(state, "FFI");
+        struct RClass *module = drb_api->mrb_define_module_under(state, FFI, "CExt");
+        struct RClass *base = state->object_class;
+        struct RClass *Adder = drb_api->mrb_define_class_under(state, module, "Adder", base);
+        drb_api->mrb_define_method(state, Adder, "add_all", add_all, MRB_ARGS_REQ(1));
+      }
+    #+end_src
+*** [Support] ~args.outputs.solids~ and ~args.outputs.sprites~ can now render triangles.
+    Example:
+
+    #+begin_src ruby
+      def tick args
+        args.outputs.solids << {
+          x:  640 - 64, y:  400,
+          x2: 640,      y2: 400 + 100,
+          x3: 640 + 64, y3: 400
+        }
+
+        args.outputs.sprites << {
+          x:  640 - 64, y:  400,
+          x2: 640,      y2: 400 + 100,
+          x3: 640 + 64, y3: 400
+          path: 'dragonruby.png',
+          source_x:  0,   source_y:  0,
+          source_x2: 128, source_y2: 100,
+          source_x3: 128, source_y3: 0
+        }
+      end
+    #+end_src
+*** [Samples] Added sample app that shows how to hand craft a Ruby object in C.
+    Location: =./samples/12_c_extensions/04_handcrafted_extension=
+*** [Samples] Added sample app that shows how to render triangles.
+    Location: =./samples/07_advanced_rendering/13_triangles=
+*** [Samples] Added sample app that shows how to render a polygon using triangles.
+    Location: =./samples/07_advanced_rendering/14_triangles_trapezoid=
+** [Standard]
+   The following updates are available to all license holders.
+*** [Support] Emscripten (HTML builds) upgraded to 3.1.3.
+*** [Support] libSDL upgraded to 2.0.20 (rendering performance increases anywhere from 5% to 20%).
+*** [Support] ~attr_sprite~ incorporates properties needed to render a triangle for api compatibility.
+*** [Support] Added ~args.geometry.find_collisions rects~ to do fast many-to-many collision checks.
+    A ~Hash~ is returned where the key is the reference to each rect that has a collision.
+*** [Support] Added ~args.controller_(one|two).connected~ which returns ~true~ if a controller is present.
+*** [Samples] Added many to many collisions sample app.
+    Location: =./samples/09_performance/09_collision_limits_many_to_many=
+*** [Samples] Added cool platforming sample app.
+    Location: =./samples/99_genre_platformer/shadows=
+*** [Bugfix] ~Numeric#frame_index~ now respects ~tick_count_override~ if the parameter is provided.
+*** [Bugfix] ~Float#(sin|cos|sin_d|cos_d|sin_r|cos_r) added.
+*** [Bugfix] DragonRuby gracefully loads even if one of your ruby files has a syntax error.
+*** [Bugfix] ~args.audio~ properties correctly convert ~Integer~ values supplied to it.
+*** [Legal] =eula.txt= added. Warning, it contains legal speak.
+
+* 3.5
+** [Support] stb_vobis upgraded to 1.22.
+** [Bugfix] Ogg Vorbis deterioration issue fixed for x86 MacOS.
+
+* 3.4
+** [Pro] [Support] Added ~args.inputs.finger_(left|right)~.
+** [Support] Added ~Numeric#(sin|cos)_d~ (an alias to ~Numeric#(sin|cos)~). The Numeric is assumed to be in degrees.
+** [Support] Added ~Numeric#(sin|cos)_r~. The ~Numeric~ is assumed to be in radians.
+** [Support] [Tweetcart] Added ~cos~ (assumes degrees), ~cos_d~, ~cos_r~ (for radians), ~sin~ (assumes degrees), ~sin_d~ ~sin_r~ (for radians) to Tweetcart's top level api.
+** [Support] [Tweetcart] Added ~no_clear!(render_target_name)~ to Tweetcart's top level api which invokes ~args.outputs[render_target_name].clear_before_render = false~.
+** [Support] Added documentation for render order, starting a new project, ~gtk.calcspritebox~.
+** [Support] Added ~putz~ which is an alias to ~puts~ so it's less annoying to search and remove random ~puts~ statements you've sprinkled in your code.
+** [Support] [Pro] [iOS] Better comments related to ~devcert~ ~prodcert~ specification in ~ios_metadata.txt~.
+** [Samples] Added sample app that shows how to do dynamic lighting using ~blendmode_enum~ and ~render_targets~.
+   Location of sample app is =./samples/07_advanced_rendering/12_lighting=
+
+* 3.3
+** [Bugfix] ~fn.pretty_(print|format)~ correctly prints ~Arrays~ nested within a ~Hash~.
+** [Support] Added docs for ~args.easing.ease~.
+** [Pro] [Bugfix] iOS hotloading no longer continuously polls for a remote server if one isn't present on startup.
+** [Pro] [Bugfix] iOS production builds correctly sign binaries.
+** [Pro] [Support] Icons for iPad Pro 12.9 added.
+** [Pro] [Support] Log output redirects to iOS Device's internal console.
+** [Samples] Added sample app that simulates falling sand.
+   Location of sample app is =./samples/99_genre_simulation/sand_simulation=.
+
+* 3.2
+** [Bugfix] ~args.gtk.write_file~ now writes to the game directory in dev mode.
+** [Support] Added ~args.gtk.set_cursor path, dx, dy~ which can be used to set the in game cursor to a sprite.
+** [Support] In-game http server is now available in Pro, Indie, AND Standard tiers.
+   Take a look at the samples apps under =./samples/11_http=
+** [OSS] DragonRuby's dev server api has been open sourced.
+   All source code that has been open sourced is available locally under =./docs/docs.txt=.
+   You can also access documentation at [http://localhost:9001] while your game is running.
+** [Support] Added ~.mp3~ support to ~args.gtk.audio~.
+   Audio api sample is located at =/samples/07_advanced_audio/01_audio_mixer/=.
+
+* 3.1
+** [Bugfix] Fixed ~gtk.http_post_body~ fixed for MacOS Monterey (and any other OS's that are using more current versions of libcurl).
+** [Bugfix] Fixed ~FrozenStringException~ when invoking ~puts nil~.
+
+* 3.0
+** [Summary]
+*** Major Release
+    This is the RTM (release to market) version of DragonRuby Game Toolkit 3.0.
+*** Oculus Quest/VR Support added to Pro License
+    You can watch the demo video at: [[DragonRuby VR][https://www.youtube.com/watch?v=I_s_kyOUgzM&ab_channel=RyanC.Gordon]]
+
+    DragonRuby Game Toolkit Pro license holders now have access to DragonRuby Game Toolkit - VR. Go to http://dragonruby.org to
+    download. The price of the Pro license has been increased to $128 per year. Anyone who currently has a Pro subscription will be
+    grand-fathered in with their current subscription price and will *NOT* see a price increase *EVER*.
+*** Indie Subscription Tier
+    With the addition of VR capabilities to the Pro tier. A new Indie tier has been
+    created (which is cheaper than a Pro license). Here is the breakdown of
+    features between each Tier:
+
+    | Standard           | Indie                 | Pro + VR                                  |
+    |--------------------+-----------------------+-------------------------------------------|
+    | OSX                | OSX                   | OSX                                       |
+    | Windows            | Windows               | Windows                                   |
+    | Linux              | Linux                 | Linux                                     |
+    | Raspberry Pi       | Raspberry Pi          | Raspberry Pi                              |
+    | Web Assembly       | Web Assembly          | Web Assembly                              |
+    | Web-based REPL     | Web-based REPL        | Web-based REPL                            |
+    | Itch.io Automation | Itch.io Automation    | Itch.io Automation                        |
+    | -                  | C Extensions          | C Extensions                              |
+    | -                  | Sound Synthesis       | Sound Synthesis                           |
+    | -                  | In-game Web Server    | In-game Web server                        |
+    | -                  | Byte-code Compilation | Byte-code Compilation                     |
+    | -                  | -                     | iOS                                       |
+    | -                  | -                     | Android                                   |
+    | -                  | -                     | Oculus Quest / VR Capabilities            |
+    | -                  | -                     | MP4 Replay Export                         |
+    | -                  | -                     | Coming Soon: Triangle Primitive Rendering |
+    | -                  | -                     | Coming Soon: HD Mode                      |
+    | -                  | -                     | Coming Soon: All Screen Mode              |
+    | -                  | -                     | Coming Soon: Portrait Orientation         |
+
+*** Sample Apps
+    Quite a few sample apps have been added which cover Mario style
+    platforming, Oculus Quest VR samples, 3D math concepts, advanced logging concepts, and
+    rendering labels inside of ~render_targets~.
+
+** [MAJOR] This is a major release of DragonRuby Game Toolkit
+   This is a major release of DragonRuby Game Toolkit. It supports Ruby 3.0 language features
+   and contains apis that are anywhere from 30% to 200% faster.
+
+   Even though there are breaking changes, the exceptions that may occur
+   should be fairly straightforward to fix. If you need help, come to the DragonRuby
+   Discord Server: http://discord.dragonruby.org and we'll help you upgrade.
+** [Samples]
+*** New 3D sample app has been added that shows how to perform ~Matrix~ transforms.
+    Location: =./samples/99_genre_3d/03_yaw_pitch_roll=.
+*** New Performance based sample app has been added that shows how to use ~Struct~.
+    Location: =./samples/09_performance/01_sprites_as_struct=.
+*** New ~render_target~ sample app has been added that shows how to rotate a label using a ~render_target~.
+    Location: =./samples/07_advanced_rendering/00_rotating_label=
+*** New Topdown RPG sample app has been added that replicates the casino room in Legend of Zelda.
+    Location: =./samples/99_genre_rpg_topdown/topdown_casino=
+*** New Platforming sample app has been added that breaks down jumping mechanics like in Super Mario Bros.
+    Location: =./samples/99_genre_mario/01_jumping=
+*** New Platforming sample app has been added that breaks down collision mechanics like in Super Mario Bros.
+    Location: =./samples/99_genre_mario/01_jumping_and_collisions=
+*** New Advanced Debugging sample app has been added that shows off DR's new logging capabilities.
+    Location: =./samples/10_advanced_debugging/00_logging/app/main.rb=
+** [Support]
+*** [Pro] Embedded http server now supports IPv6.
+*** [Pro] Ruby array C Extension generation.
+*** [Performance] ~Hash~ value assignment is 16x faster. Rendering using ~Hashes~ is 10x faster.
+    This deficiency exists in mRuby and has been optimized in DragonRuby.
+
+    Because of this change, the following code is 16x faster:
+    #+begin_src ruby
+      some_hash = {}
+      some_hash[:a] ||= :some_value
+    #+end_src
+
+    In the event of a missing key, the execution speed is also 16x faster:
+    #+begin_src ruby
+      some_hash = { a: 10 }
+      some_hash[:b] # nil, 16x faster
+      some_hash[:a] # no speed change/already fast
+    #+end_src
+*** Labels can support larger font sizes.
+*** Structs can be used with ~args.outputs~.
+*** ~gtk.benchmark~ is a bit more accurate.
+*** Added ~gtk.docs_benchmark~.
+*** Moved =./exceptions= and  =./console_history.txt= under =./logs=.
+*** Rendering performance improved for ~OpenEntity~.
+*** New logging apis have been added.
+*** Added ~args.gtk.version_indie?~ for the new Indie tier.
+** [Bugfix]
+*** Labels no longer shift vertically when the screen is resized.
+*** ~args.inputs.mouse.wheel~ reports the correct direction on non Mac machines.
+*** ~dragonruby-httpd~ works with Chrome.
+*** Crashes related to unsupported Korean keyboard events on MacOS have been resolved. Thank you podo@discord for troubleshooting.
+*** Fixed malformed http content for ~args.gtk.http_post_body~.
+*** Crashes related to headless unit tests have been fixed.
+** [MAJOR]
+*** [SAFE] Ruby 3.0 language features are now available. The new syntax should be compatible with Ruby 2.0.
+*** [SAFE] Except to see anywhere from 20% to 200% boost in performance overall.
+*** [SAFE] [DIVERGENT] DragonRuby's Runtime returns a ~Float~ for integer division (retaining mRuby 2.x behavior).
+    In mRuby 3.0, ~1/2~ would return ~0 (Int)~. In the DragonRuby Runtime, ~1/2~ returns ~0.5 (Float)~. Use ~Numeric#idiv~ for
+    integer division.
+*** [SAFE] [DIVERGENT] DragonRuby's Runtime retained ~rand~ generation algorithms from mRuby 2.0.
+    Incorporating 3.0's RNG algorithm would have resulted in unnecessary breaking changes that would have invalidated replays
+    of existing games.
+*** [SAFE] [DIVERGENT] ~Hash~ in most cases will not discriminate between ~Float~ and ~Int~ keys (where the number after the decimal point is ~0~).
+    This was existing mRuby 2.0 behavior and was retained within this major release to avoid unnecessary breaking changes related to key lookup.
+*** [BREAKING] Mutation of a ~frozen~ instance with ~include~ or ~extend~ throws an exception (in mRuby 2.0 this behavior did not occur).
+    Helpful error messages have been added where this type of mutation is most likely to happen.
+*** [BREAKING] Arithmetic and comparison operations no longer attempt to coerce/infer types.
+    You will receive exceptions because of this. General troubleshooting tips for these exceptions:
+    1. Carefully read the ~backtrace~ for ~Exceptions~ that are thrown (come to our Discord if you need help).
+    2. Make sure all references to ~args.state~ have been initialized to a default value.
+    3. Audit ~Int/Float~ operations to make sure they are operating on variables
+       that have been initialized with a default value.
+    4. Audit ~String~ operations to make sure they are operating on variables
+       that have been initialized with a default value.
+    5. Audit ~Enumerable~ operations to make sure they are operating on variables
+       that have been initialized to a default value.
+    Special thanks to erquint@discord, leviondiscord@discord, and danhealy@discord for continuing to raise
+    debugging concerns with respect to arithmetic/implicit coercion.
+*** [BREAKING] DragonRuby's "Level 1" Runtime has been updated to mRuby 3.0.
+    This is a major release of DragonRuby Game Toolkit. The breaking changes should be minimal, but unfortunately do exist.
+    Please report issues in our Discord and we will get them resolved right away: http://discord.dragonruby.org (mention @amirrajan).
+
+    A special thank you to podo@discord, hiro_r_b@discord, kfischer_okarin@discord, and leviondiscord@discord for troubleshooting.
+
+    A full explanation of DragonRuby's Multilevel Runtime Architecture can be found here: http://docs.dragonruby.org/#----what-is-dragonruby-
+    Please read through it so you have a better understanding of how DragonRuby is different than other Ruby runtimes.
+    It's VERY IMPORTANT to educate yourself on these differentiators. Especially if you find yourself being asked:
+    #+begin_quote
+      Why are you using Ruby to build games? Ruby is slow.
+    #+end_quote
+*** [SOFT BREAK] In a small subset of situations (such as with frozen objects), ~Hash~ keys *will* differentiate between ~Float~ and ~Int~ keys.
+    This is new behavior in mRuby 3.0, so be cognizant of this subtlety if you receive an exception.
+    The following works in mRuby 2.0:
+    #+begin_src ruby
+      def tick args
+        sample_hash = { 3.0 => "float value resolved", 4 => "int value resolved" }
+        puts sample_hash[3.0] # float value resolved
+        puts sample_hash[3]   # float value resolved
+
+        puts sample_hash[4.0] # int value resolved
+        puts sample_hash[4]   # int value resolved
+      end
+    #+end_src
+    But in some instances, it may not work in 3.0:
+    #+begin_src ruby
+      def tick args
+        sample_hash = { 3.0 => "float value resolved", 4 => "int value resolved" }
+        puts sample_hash[3.0] # float value resolved
+        puts sample_hash[3]   # might return nil
+
+        puts sample_hash[4.0] # might return nil
+        puts sample_hash[4]   # int value resolved
+      end
+    #+end_src
+    If you know ahead of time if your keys are ~Int~s. Be sure to invoke ~.to_i~ on any keys that may have been
+    converted into a ~Float~ (especially when deserializing data from disk).
+** [Pro] [Bugfix]
+*** [Pro] Fixed Android bundling targeting Dalvik.
+*** [Pro] iOS Wizard failed to stage correctly on a brand new project. This has been resolved.
+*** [Pro] Auto discovering iOS development/distribution certificates was problematic and must now be explicitly defined.
+    =mygame/metadata/ios_metadata.txt= now requires the ~devcert~ and ~prodcert~ config values. Here is an example template:
+    #+begin_src txt
+      # ios_metadata.txt is used by the Pro version of DragonRuby Game Toolkit to create iOS apps.
+      # Information about the Pro version can be found at: http://dragonruby.org/toolkit/game#purchase
+
+      # teamname needs to be set to your assigned team id which can be found at https://developer.apple.com/account/#/membership/L7H57V9CRD
+      teamid=
+      # appid needs to be set to your application identifier which can be found at https://developer.apple.com/account/resources/identifiers/list
+      appid=
+      # appname is the name you want to show up underneath the app icon on the device
+      appname=
+
+      # devcert is the certificate to use for development/deploying to your local device
+      devcert=
+      # prodcert is the certificate to use for distribution to the app store
+      prodcert=
+    #+end_src
